@@ -2,7 +2,8 @@ import { useForm } from "@tanstack/react-form";
 import type { AnyFieldApi } from '@tanstack/react-form'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAddTodo, useDisplayContext } from "@/store/Hooks";
+import { useAddTodo, useGetDisplayType } from "@/store/Hooks";
+import { DEFAULT_DISPLAY_TYPE } from "@/lib/utils";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
     return (
@@ -17,8 +18,8 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 
 export default function AddTodo() {
 
-    const { displayType } = useDisplayContext();
-    const addTodo = useAddTodo(displayType);
+    const { data: displayType } = useGetDisplayType();
+    const addTodo = useAddTodo(displayType || DEFAULT_DISPLAY_TYPE);
 
     const form = useForm({
         defaultValues: {

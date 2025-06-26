@@ -1,7 +1,7 @@
-import { useDisplayContext, useRemoveTodo, useTodos, useToggleTodo } from '@/store/Hooks'
+import { useGetDisplayType, useRemoveTodo, useSetDisplayType, useTodos, useToggleTodo } from '@/store/Hooks'
 import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import type { TodoListDisplayType, TodoItem } from '@/store/TodoContext';
+import type { TodoListDisplayType } from '@/store/TodoListDisplayType';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,10 +14,13 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useState } from 'react';
-
+import { DEFAULT_DISPLAY_TYPE } from '@/lib/utils';
+import type { TodoItem } from '@/store/Models/TodoItem';
 
 export default function Todos() {
-    const { displayType, setDisplayType } = useDisplayContext();
+    const { data } = useGetDisplayType();
+    const { mutate: setDisplayType } = useSetDisplayType()
+    const displayType = data || DEFAULT_DISPLAY_TYPE;
     const { mutateAsync: removeTodo, isPending: isDeleting } = useRemoveTodo(displayType, {
         onSuccess: () => {
             setOpenDeleteDialog(null);

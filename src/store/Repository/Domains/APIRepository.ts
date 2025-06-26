@@ -1,6 +1,6 @@
 import type { TodoRepository } from "../TodoRepository";
 import axios, { type AxiosResponse } from "axios";
-import type { TodoListDisplayType, TodoItem } from "@/store/TodoContext";
+import type { TodoListDisplayType, TodoItem } from "@/store/TodoListDisplayType";
 import { BaseDisplayTypeRepository } from "./BaseDisplayTypeRepository";
 
 const baseUrl = "http://localhost:8080";

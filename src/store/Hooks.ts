@@ -1,17 +1,7 @@
-import { useContext } from "react";
-import TodoDisplayContext, { type TodoListDisplayType } from "./TodoContext";
+import { type TodoListDisplayType } from "./TodoListDisplayType";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRepository } from "./Repository/RepositoryManager";
 
-export const useDisplayContext = () => {
-  const context = useContext(TodoDisplayContext);
-  if (!context) {
-    throw new Error("useTodos must be used within a TodosProvider");
-  }
-  return context;
-};
-
-// API Hooks
 const repo = getRepository();
 
 export function useTodos(displayType: TodoListDisplayType) {
@@ -55,6 +45,23 @@ export function useToggleTodo(displayType: TodoListDisplayType) {
       repo.toggleTodo(id, completed),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", displayType] });
+    },
+  });
+}
+
+export function useGetDisplayType() {
+  return useQuery({
+    queryKey: ["displayType"],
+    queryFn: () => repo.getDisplayType(),
+  });
+}
+
+export function useSetDisplayType() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (displayType: TodoListDisplayType) => repo.changeDisplayType(displayType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["displayType"] });
     },
   });
 }

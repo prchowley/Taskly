@@ -1,4 +1,5 @@
-import type { TodoListDisplayType, TodoItem } from "../TodoContext";
+import type { TodoItem } from "../Models/TodoItem";
+import type { TodoListDisplayType } from "../TodoListDisplayType";
 
 export interface TodoRepository {
     getTodos(displayType: TodoListDisplayType): Promise<TodoItem[]>;

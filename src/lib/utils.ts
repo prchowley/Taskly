@@ -1,4 +1,4 @@
-import type { TodoListDisplayType } from "@/store/TodoContext";
+import type { TodoListDisplayType } from "@/store/TodoListDisplayType";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 

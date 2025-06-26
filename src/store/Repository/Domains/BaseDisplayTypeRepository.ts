@@ -1,4 +1,4 @@
-import type { TodoListDisplayType } from "@/store/TodoContext";
+import type { TodoListDisplayType } from "@/store/TodoListDisplayType";
 import { DEFAULT_DISPLAY_TYPE, STORAGE_KEY_DISPLAY_TYPE } from "@/lib/utils";
 
 export class BaseDisplayTypeRepository {
