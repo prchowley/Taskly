@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { DEFAULT_DISPLAY_TYPE } from '@/lib/utils';
 import type { TodoItem } from '@/store/Models/TodoItem';
+import { useMediaQuery } from 'react-responsive';
 
 export default function Todos() {
     const { data } = useGetDisplayType();
@@ -199,20 +200,24 @@ export default function Todos() {
         )
     }
 
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+
     const loadingSkeleton = () => {
+                const containerClass = isMobile ? "flex-1 mt-2" : "flex-1 overflow-y-auto mt-2"
+
         return isTodoPending ? (
-            <div className="flex-1 overflow-y-auto">
+            <div className={containerClass}>
                 {[...Array(3)].map((_, i) => todoItemSkeleton(i))}
             </div>
         ) : (
-            <div className="flex-1 overflow-y-auto mt-2">
+            <div className={containerClass}>
                 {todos.map(todoItem)}
             </div>
         )
     }
 
     return (
-        <div className="m-4 w-full max-w-3xl mx-auto bg-white shadow-md rounded-md p-4 flex flex-col h-[60vh]">
+        <div className={`m-4 w-full max-w-3xl mx-auto bg-white border border-black-200 rounded-md p-4 flex flex-col ${!isMobile ? "h-[60vh]" : ""}`}>
             <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
 
             {toggleGroup()}
