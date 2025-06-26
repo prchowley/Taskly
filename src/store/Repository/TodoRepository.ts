@@ -1,13 +1,13 @@
-import type { TodoDisplayType, TodoItem } from "../TodoContext";
+import type { TodoListDisplayType, TodoItem } from "../TodoContext";
 
 export interface TodoRepository {
-    getTodos(displayType: TodoDisplayType): Promise<TodoItem[]>;
+    getTodos(displayType: TodoListDisplayType): Promise<TodoItem[]>;
     addTodo(task: string): Promise<TodoItem>;
     removeTodo(id: string): Promise<void>;
     toggleTodo(id: string, completed: boolean): Promise<TodoItem | undefined>;
 }
 
 export interface TodoDisplayTypeRepository {
-    changeDisplayType(type: TodoDisplayType): Promise<TodoDisplayType>;
-    getDisplayType(): Promise<TodoDisplayType>;
+    changeDisplayType(type: TodoListDisplayType): Promise<TodoListDisplayType>;
+    getDisplayType(): Promise<TodoListDisplayType>;
 }

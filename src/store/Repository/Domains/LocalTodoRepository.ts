@@ -1,4 +1,4 @@
-import type { TodoDisplayType, TodoItem } from "@/store/TodoContext";
+import type { TodoListDisplayType, TodoItem } from "@/store/TodoContext";
 import type { TodoRepository } from "../TodoRepository";
 import { STORAGE_KEY } from "@/lib/utils";
 import { BaseDisplayTypeRepository } from "./BaseDisplayTypeRepository";
@@ -7,7 +7,7 @@ export class LocalTodoRepository extends BaseDisplayTypeRepository implements To
 
     // TodoRepository methods
 
-    async getTodos(displayType: TodoDisplayType = 'all'): Promise<TodoItem[]> {
+    async getTodos(displayType: TodoListDisplayType = 'all'): Promise<TodoItem[]> {
         const data = localStorage.getItem(STORAGE_KEY);
         const todos = data ? JSON.parse(data) : [];
         switch (displayType) {
