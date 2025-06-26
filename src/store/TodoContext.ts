@@ -1,4 +1,3 @@
-import { DEFAULT_DISPLAY_TYPE } from "@/lib/utils";
 import { createContext, type Dispatch, type SetStateAction } from "react";
 
 export type TodoItem = {
@@ -15,6 +14,6 @@ export type TodoListDisplayContextType = {
     setDisplayType: Dispatch<SetStateAction<TodoListDisplayType>>;
 };
 
-const TodoListDisplayContext = createContext<TodoListDisplayContextType>(DEFAULT_DISPLAY_TYPE);
+const TodoListDisplayContext = createContext<TodoListDisplayContextType | null>(null);
 
 export default TodoListDisplayContext;
