@@ -24,8 +24,8 @@ This project demonstrates clean architecture using the SOLID principles, the rep
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn/ui](https://ui.shadcn.com/)
-- [TanStack Query](https://tanstack.com/query/latest) (for future API integration)
-- [Axios](https://axios-http.com/) (for future API integration)
+- [TanStack Query](https://tanstack.com/query/latest)
+- [Axios](https://axios-http.com/) 
 
 ---
 
