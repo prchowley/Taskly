@@ -3,6 +3,8 @@
 A modern, scalable Todo application built with React, TypeScript, and Tailwind CSS.  
 This project demonstrates clean architecture using the SOLID principles, the repository pattern, and is ready for both localStorage and future API/database backends.
 
+- [Live](https://loquacious-hotteok-e0bda7.netlify.app)
+
 ---
 
 ## ✨ Features
