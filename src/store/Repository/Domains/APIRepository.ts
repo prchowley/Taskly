@@ -1,7 +1,8 @@
 import type { TodoRepository } from "../TodoRepository";
 import axios, { type AxiosResponse } from "axios";
-import type { TodoListDisplayType, TodoItem } from "@/store/TodoListDisplayType";
+import type { TodoListDisplayType } from "@/store/TodoListDisplayType";
 import { BaseDisplayTypeRepository } from "./BaseDisplayTypeRepository";
+import type { TodoItem } from "@/store/Models/TodoItem";
 
 const baseUrl = "http://localhost:8080";
 const axiosInstance = axios.create({
