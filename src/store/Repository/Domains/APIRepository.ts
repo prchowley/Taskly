@@ -3,14 +3,27 @@ import axios, { type AxiosResponse } from "axios";
 import type { TodoListDisplayType } from "@/store/TodoListDisplayType";
 import { BaseDisplayTypeRepository } from "./BaseDisplayTypeRepository";
 import type { TodoItem } from "@/store/Models/TodoItem";
+import { FB_ID_TOKEN } from "@/lib/utils";
 
-const baseUrl = "http://localhost:8080";
+const baseUrl = "https://taskly-backend.netlify.app/api";
 const axiosInstance = axios.create({
     baseURL: baseUrl,
     headers: {
         "Content-Type": "application/json",
     },
 });
+
+// Add a request interceptor
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem(FB_ID_TOKEN);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
 export class APIRepository extends BaseDisplayTypeRepository implements TodoRepository {
     async getTodos(displayType: TodoListDisplayType): Promise<TodoItem[]> {

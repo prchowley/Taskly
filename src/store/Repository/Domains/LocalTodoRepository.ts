@@ -8,16 +8,15 @@ export class LocalTodoRepository extends BaseDisplayTypeRepository implements To
 
     async getTodos(displayType: TodoListDisplayType = 'all'): Promise<TodoItem[]> {
         const data = localStorage.getItem(STORAGE_KEY);
-        const todos = data ? JSON.parse(data) : [];
-        switch (displayType) {
-            case 'active':
-                return todos.filter((todo: TodoItem) => !todo.completed);
-            case 'completed':
-                return todos.filter((todo: TodoItem) => todo.completed);
-            case 'all':
-            default:
-                return todos;
-        }
+        const todos: TodoItem[] = data ? JSON.parse(data) : [];
+
+        const filtered = displayType === 'active'
+            ? todos.filter(todo => !todo.completed)
+            : displayType === 'completed'
+            ? todos.filter(todo => todo.completed)
+            : todos;
+
+        return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     
     async addTodo(task: string): Promise<TodoItem> {

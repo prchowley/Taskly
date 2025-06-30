@@ -2,19 +2,19 @@ import { type TodoListDisplayType } from "./TodoListDisplayType";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRepository } from "./Repository/RepositoryManager";
 
-const repo = getRepository();
+const repo = () => getRepository();
 
 export function useTodos(displayType: TodoListDisplayType) {
   return useQuery({
     queryKey: ["todos", displayType],
-    queryFn: () => repo.getTodos(displayType),
+    queryFn: () => repo().getTodos(displayType),
   });
 }
 
 export function useAddTodo(displayType: TodoListDisplayType) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (task: string) => repo.addTodo(task),
+    mutationFn: (task: string) => repo().addTodo(task),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", displayType] });
     },
@@ -28,7 +28,7 @@ export function useRemoveTodo(
   const queryClient = useQueryClient();
   return useMutation({
     ...options,
-    mutationFn: (id: string) => repo.removeTodo(id),
+    mutationFn: (id: string) => repo().removeTodo(id),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["todos", displayType] });
       if (typeof options.onSuccess === "function") {
@@ -42,7 +42,7 @@ export function useToggleTodo(displayType: TodoListDisplayType) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
-      repo.toggleTodo(id, completed),
+      repo().toggleTodo(id, completed),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", displayType] });
     },
@@ -52,14 +52,14 @@ export function useToggleTodo(displayType: TodoListDisplayType) {
 export function useGetDisplayType() {
   return useQuery({
     queryKey: ["displayType"],
-    queryFn: () => repo.getDisplayType(),
+    queryFn: () => repo().getDisplayType(),
   });
 }
 
 export function useSetDisplayType() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (displayType: TodoListDisplayType) => repo.changeDisplayType(displayType),
+    mutationFn: (displayType: TodoListDisplayType) => repo().changeDisplayType(displayType),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["displayType"] });
     },

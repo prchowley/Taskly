@@ -1,4 +1,4 @@
-import { useGetDisplayType, useRemoveTodo, useSetDisplayType, useTodos, useToggleTodo } from '@/store/Hooks'
+import { useAddTodo, useGetDisplayType, useRemoveTodo, useSetDisplayType, useTodos, useToggleTodo } from '@/store/Hooks'
 import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { TodoListDisplayType } from '@/store/TodoListDisplayType';
@@ -14,18 +14,19 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useState } from 'react';
-import { DEFAULT_DISPLAY_TYPE } from '@/lib/utils';
+import { DEFAULT_DISPLAY_TYPE, FB_ID_TOKEN } from '@/lib/utils';
 import type { TodoItem } from '@/store/Models/TodoItem';
 import { useMediaQuery } from 'react-responsive';
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from '@/lib/firebase';
+
 
 export default function Todos() {
     const { data } = useGetDisplayType();
     const { mutate: setDisplayType } = useSetDisplayType()
     const displayType = data || DEFAULT_DISPLAY_TYPE;
     const { mutateAsync: removeTodo, isPending: isDeleting } = useRemoveTodo(displayType, {
-        onSuccess: () => {
-            setOpenDeleteDialog(null);
-        }
+        onSuccess: () => setOpenDeleteDialog(null)
     });
     const toggleTodo = useToggleTodo(displayType);
     const [openDeleteDialog, setOpenDeleteDialog] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export default function Todos() {
     }
 
     const noTodosMessage = () => {
-        return todos.length === 0 && !isTodoPending ? (
+        return !error && todos.length === 0 && !isTodoPending ? (
             <div className="mt-4 text-gray-500 text-center">
                 {(() => {
                     switch (displayType) {
@@ -210,7 +211,7 @@ export default function Todos() {
     const errorSection = () => {
         {/* Error Section */ }
         if (error) return (
-            <div className="mb-2 p-2 rounded bg-red-100 text-red-700 border border-red-200 text-center">
+            <div className="mb-2 p-2 rounded bg-red-100 text-red-700 border border-red-200 text-center mt-2">
                 {error instanceof Error ? error.message : "An error occurred while loading your todos."}
             </div>
         )
@@ -232,9 +233,111 @@ export default function Todos() {
         )
     }
 
+    const syncButton = () => (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <button
+                    className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors duration-200"
+                    disabled={singinIn}
+                >
+                    {singinIn ? 'Signin in...' : syncing ? 'Syncing' : `Sync`}
+                </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-white transition-all duration-1000 ease-out data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
+                <AlertDialogHeader>
+                    <AlertDialogTitle>To sync, you need to sign-in?</AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel
+                        className='hover:bg-gray-200 cursor-pointer'
+                    >
+                        Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        className='bg-black hover:bg-red-700 transition-colors duration-100 cursor-pointer text-white'
+                        onClick={ async () => {
+                            await handleGoogleSignIn();
+                            await handleSync();
+                        }}
+                    >
+                        {singinIn ? (
+                            <span className="flex items-center gap-2">
+                                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="8"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        fill="none"
+                                    />
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M12 2a10 10 0 1 1-7.07 2.93l2.83 2.83A6 6 0 1 0 18 12h4c0-5.52-4.48-10-10-10z"
+                                    />
+                                </svg>
+                                Signin & Syncing...
+                            </span>
+                        ) : (
+                            <>
+                                Sign-in with
+                                <svg width="28" height="28" viewBox="0 0 48 48" aria-hidden="true">
+                                    <g>
+                                        <circle cx="24" cy="24" r="20" fill="none" />
+                                        <path fill="white" d="M43.6 20.5h-1.9V20H24v8h11.3c-1.6 4.3-5.7 7-11.3 7-6.6 0-12-5.4-12-12s5.4-12 12-12c2.7 0 5.2.9 7.2 2.4l6-6C34.1 5.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.3-3.5z" />
+                                    </g>
+                                </svg>
+                            </>
+
+                        )}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+
+
+    const [singinIn, setSigninIn] = useState(false);
+    const handleGoogleSignIn = async () => {
+        setSigninIn(true);
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+
+            if (user) {
+                const idToken = await user.getIdToken();
+                localStorage.setItem(FB_ID_TOKEN, idToken);
+            }
+        } catch (error) {
+            alert(`Google sign-in failed with error: ${error}`);
+        } finally {
+            setSigninIn(false);
+        }
+    };
+
+    const [syncing, setSyncing] = useState<boolean>(false);
+    const addTodo = useAddTodo(displayType || DEFAULT_DISPLAY_TYPE);
+    const handleSync = async () => {
+        setSyncing(true);
+        try {
+            todos.forEach(async element => await addTodo.mutateAsync(element.task));
+        } catch {
+            alert(`Syncing failed with error: ${error}`);
+        } finally {
+            setSyncing(false);
+        }
+    };
+
+    const idToken = localStorage.getItem(FB_ID_TOKEN);
+
     return (
         <div className={`m-4 w-full max-w-3xl mx-auto bg-white border border-black-200 rounded-md p-4 flex flex-col ${!isMobile ? "h-[60vh]" : ""}`}>
-            <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Your Tasks</h2>
+                {!idToken && syncButton()}
+            </div>
 
             {toggleGroup()}
 

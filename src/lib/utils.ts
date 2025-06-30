@@ -9,3 +9,4 @@ export function cn(...inputs: ClassValue[]) {
 export const STORAGE_KEY = "todos";
 export const DEFAULT_DISPLAY_TYPE: TodoListDisplayType = "all";
 export const STORAGE_KEY_DISPLAY_TYPE = "todoDisplayType";
+export const FB_ID_TOKEN = "idToken";
