@@ -77,6 +77,11 @@ export default function Todos() {
                     aria-label="Delete todo"
                     title="Delete"
                     onClick={() => setOpenDeleteDialog(todo.id)}
+                    onKeyDown={e => { // To make the item accessible
+                        if (e.key === "Enter" || e.key === " ") {
+                            setOpenDeleteDialog(todo.id);
+                        }
+                    }}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -148,18 +153,29 @@ export default function Todos() {
             className="flex items-center justify-between gap-4 py-2 border-b last:border-b-0"
         >
             {/* Left: vertical stack */}
-            <div className="flex flex-col flex-1">
+            <div
+                className="flex flex-col flex-1 cursor-pointer group"
+                onClick={() => toggleTodo.mutate({ id: todo.id, completed: !todo.completed })}
+                tabIndex={0}
+                role="button"
+                aria-pressed={todo.completed}
+                onKeyDown={e => { // To make the item accessible
+                    if (e.key === "Enter" || e.key === " ") {
+                        toggleTodo.mutate({ id: todo.id, completed: !todo.completed });
+                    }
+                }}
+            >
                 {/* Top: checkbox + task */}
                 <div className="flex items-center gap-2">
                     <Checkbox
                         checked={todo.completed}
+                        onClick={e => e.stopPropagation()} // Prevent click bubbling
                         onCheckedChange={() => toggleTodo.mutate({ id: todo.id, completed: !todo.completed })}
                         className="cursor-pointer"
                     />
                     <span className={`text-base ${todo.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
                         {todo.task}
                     </span>
-
                 </div>
                 {/* Bottom: id */}
                 <span className="text-xs text-gray-400 ml-6">#{todo.id}</span>
@@ -203,7 +219,7 @@ export default function Todos() {
     const isMobile = useMediaQuery({ maxWidth: 767 });
 
     const loadingSkeleton = () => {
-                const containerClass = isMobile ? "flex-1 mt-2" : "flex-1 overflow-y-auto mt-2"
+        const containerClass = isMobile ? "flex-1 mt-2" : "flex-1 overflow-y-auto mt-2"
 
         return isTodoPending ? (
             <div className={containerClass}>
