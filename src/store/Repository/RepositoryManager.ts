@@ -1,5 +1,5 @@
 import { FB_ID_TOKEN } from "@/lib/utils";
-import { APIRepository } from "./Domains/APIRepository";
+import { APIRepository } from "./Domains/api/APIRepository";
 import { LocalTodoRepository } from "./Domains/LocalTodoRepository";
 import type { TodoDisplayTypeRepository, TodoRepository } from "./TodoRepository";
 
