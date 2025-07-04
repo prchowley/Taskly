@@ -2,7 +2,7 @@ import { FB_ID_TOKEN } from "@/lib/utils";
 import { getAuth } from "firebase/auth";
 import axios from 'axios';
 
-const baseUrl = "http://localhost:8888/api";
+const baseUrl = "https://taskly-backend.netlify.app/api";
 export const axiosInstance = axios.create({
     baseURL: baseUrl,
     headers: {
